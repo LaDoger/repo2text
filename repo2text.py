@@ -32,7 +32,7 @@ CONFIGURATIONS = ['.cfg', '.conf', '.ini', '.properties', '.toml']
 text_extensions = COMMON_FILES + SCRIPTING_LANGUAGES + WEB_RELATED + C_CPP + JAVA + OTHER_LANGUAGES + FUNCTIONAL_PROGRAMMING + SMART_CONTRACTS + DOCUMENTATION + CONFIGURATIONS
 
 # List of special files with specific names
-special_files = ['rebar.config', 'LICENSE']
+special_files = ['rebar.config']
 
 # Default list of patterns to ignore
 default_ignore_patterns = [
@@ -43,6 +43,7 @@ default_ignore_patterns = [
     '*.pbc', '*.par', '*.pyo', '*.pyd', '*.pdb', 
     '*.asm', '*.bin', '*.elf', '*.hex', '*.lst', 
     '*.lss', '*.d', '*.dep', 'node_modules', 
+    '*.beam', 'LICENSE.md', '_build',
     'venv/', 'venv/*', 'repo2text.py', 'repo2text.txt',
     '.env', '.dockerignore', '.gitignore', '.github/'
 ]
@@ -66,7 +67,7 @@ class Repo2Text:
     @lru_cache(maxsize=None)
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        if '.git' in relative_path.parts or '.github' in relative_path.parts or relative_path in {Path('repo2text.py'), Path('repo2text.txt'), Path('.env'), Path('.dockerignore'), Path('.gitignore')}:
+        if '.git' in relative_path.parts or '.github' in relative_path.parts or str(relative_path) in {'repo2text.py', 'repo2text.txt', '.env', '.dockerignore', '.gitignore', 'LICENSE.md'}:
             print(f"Ignoring {relative_path} because it's in .git or .github directory or is the script itself or the output file.")
             return True
         if self.ignore_spec.match_file(str(relative_path)):
@@ -77,17 +78,21 @@ class Repo2Text:
 
     def write_content(self, file_path: Path, out_file):
         is_text_file = file_path.suffix in text_extensions or file_path.name in special_files
-        out_file.write(f"\n---\n`{str(file_path)}`\n")
-        if is_text_file:
-            out_file.write("````\n")
-            try:
-                out_file.write(file_path.read_text(errors='replace'))
-            except Exception as e:
-                print(f"Could not read file {file_path}. Reason: {e}")
-            out_file.write("````\n")
-            out_file.write("---\n")
-        else:
-            out_file.write("---\n")
+        should_ignore_file = self.should_ignore(file_path)
+        
+        if not should_ignore_file:  # Add this condition
+            out_file.write(f"\n---\n`{str(file_path)}`\n")
+            
+            if is_text_file:
+                out_file.write("````\n")
+                try:
+                    out_file.write(file_path.read_text(errors='replace'))
+                except Exception as e:
+                    print(f"Could not read file {file_path}. Reason: {e}")
+                out_file.write("````\n")
+                out_file.write("---\n")
+            else:
+                out_file.write("---\n")
 
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
