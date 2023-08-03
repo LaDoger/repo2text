@@ -1,7 +1,7 @@
 """
 This script is named "repo2text.py" and is designed to convert an entire
 repository into a single .txt file named "repo2text.txt". This could be useful
-when you want to feed the entire repository to a Large language Model (LLM) 
+when you want to feed the entire repository to a Large Language Model (LLM) 
 and let it understand how the repository works.
 
 The script recursively goes through every file in the repository. It treats 
