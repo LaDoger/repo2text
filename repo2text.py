@@ -1,7 +1,7 @@
 """
 This script is named "repo2text.py" and is designed to convert an entire
 repository into a single .txt file named "repo2text.txt". This could be useful
-when you want to feed the entire repository to a Large Language Model (LLM) 
+when you want to feed the entire repository to a Language Learning Model (LLM) 
 and let it understand how the repository works.
 
 The script recursively goes through every file in the repository. It treats 
@@ -71,8 +71,8 @@ default_ignore_patterns = [
     '*.dll', '*.so', '*.dylib', '*.hi', '*.chi', 
     '*.pbc', '*.par', '*.pyo', '*.pyd', '*.pdb', 
     '*.asm', '*.bin', '*.elf', '*.hex', '*.lst', 
-    '*.lss', '*.d', '*.dep', 'node_modules',
-    'venv/', '.venv/'
+    '*.lss', '*.d', '*.dep', 'node_modules', 
+    'venv/', 'venv/*', 'repo2text.py', 'repo2text.txt'
 ]
 
 # Load .gitignore file if exists, otherwise use the default ignore list
@@ -86,18 +86,13 @@ except FileNotFoundError:
     print(".gitignore not found, using default ignore list.")
 
 def should_ignore(file_path):
-    # Get relative path to match gitignore-style patterns correctly
     relative_path = os.path.relpath(file_path, start=os.path.dirname(os.path.abspath(__file__)))
-    
-    # Explicitly ignore .git directory
-    if relative_path.split(os.sep)[0] == '.git':
-        print(f"Ignoring {relative_path} because it's in .git directory.")
+    if relative_path.split(os.sep)[0] == '.git' or relative_path == os.path.basename(__file__) or relative_path == 'repo2text.txt':
+        print(f"Ignoring {relative_path} because it's in .git directory or is the script itself or the output file.")
         return True
-
     if ignore_spec.match_file(relative_path):
         print(f"Ignoring {relative_path} because it matches the ignore list.")
         return True
-
     print(f"Processing {relative_path}.")
     return False
 
