@@ -1,17 +1,7 @@
 """
-This script is named "repo2text.py" and is designed to convert an entire
-repository into a single .txt file named "repo2text.txt". This could be useful
-when you want to feed the entire repository to a Large Language Model (LLM) 
-and let it understand how the repository works.
-
-The script recursively goes through every file in the repository. It treats 
-text-based files and non-text files differently:
-
-- For text-based files, such as .py, .md, .txt, etc., it writes the file path 
-  and the file content to "repo2text.txt".
-  
-- For non-text files, such as image or binary files, it only writes the file path
-  to "repo2text.txt". 
+Script to convert an entire repository into a single .txt file named "repo2text.txt".
+This could be useful when you want to feed the entire repository to a
+Large Language Model (LLM) and let it understand how the repository works.
 
 Usage: 
 
@@ -20,48 +10,29 @@ Usage:
 - The script will create "repo2text.txt" in the same root folder.
 """
 
-import os
-from pathlib import Path
+import argparse
 import pathspec
+from pathlib import Path
+from functools import lru_cache
+
+
+# File extension categories
+COMMON_FILES = ['.txt', '.json', '.xml', '.csv', '.yml', '.yaml']
+SCRIPTING_LANGUAGES = ['.py', '.sh', '.rb', '.lua', '.r']
+WEB_RELATED = ['.js', '.html', '.css', '.php']
+C_CPP = ['.c', '.cpp', '.h', '.hpp']
+JAVA = ['.java', '.class']
+OTHER_LANGUAGES = ['.go', '.rs', '.swift', '.cs']
+FUNCTIONAL_PROGRAMMING = ['.m', '.erl', '.beam', '.ex', '.exs']
+SMART_CONTRACTS = ['.sol', '.vy']
+DOCUMENTATION = ['.md', '.mmd']
+CONFIGURATIONS = ['.cfg', '.conf', '.ini', '.properties', '.toml']
 
 # List of text-based file extensions
-text_extensions = [
-    # Common text and config files
-    '.txt', '.json', '.xml', '.csv', '.yml', '.yaml', 
-
-    # Scripting languages
-    '.py', '.sh', '.bash', '.bat', '.cmd', '.pl', '.pm', '.t', '.pod', '.rb', '.lua', '.r', 
-
-    # Web-related
-    '.js', '.html', '.css', '.scss', '.sass', '.php', '.inc',
-
-    # C and C++
-    '.c', '.cpp', '.h', '.hpp', 
-
-    # Java
-    '.java', '.class',
-
-    # Go, Rust, Swift
-    '.go', '.rs', '.swift', 
-
-    # .NET
-    '.cs',
-
-    # Functional programming
-    '.m', '.erl', '.beam', '.ex', '.exs',
-
-    # Smart contracts
-    '.sol', '.vy',
-
-    # Documentation and diagramming
-    '.md', '.mmd',
-
-    # Configurations
-    '.cfg', '.conf', '.ini', '.properties', '.toml', '.prefs'
-]
+text_extensions = COMMON_FILES + SCRIPTING_LANGUAGES + WEB_RELATED + C_CPP + JAVA + OTHER_LANGUAGES + FUNCTIONAL_PROGRAMMING + SMART_CONTRACTS + DOCUMENTATION + CONFIGURATIONS
 
 # List of special files with specific names
-special_files = ['rebar.config', 'Dockerfile', 'Makefile', 'CMakeLists.txt']
+special_files = ['rebar.config', 'LICENSE']
 
 # Default list of patterns to ignore
 default_ignore_patterns = [
@@ -72,55 +43,66 @@ default_ignore_patterns = [
     '*.pbc', '*.par', '*.pyo', '*.pyd', '*.pdb', 
     '*.asm', '*.bin', '*.elf', '*.hex', '*.lst', 
     '*.lss', '*.d', '*.dep', 'node_modules', 
-    'venv/', 'venv/*', 'repo2text.py', 'repo2text.txt'
+    'venv/', 'venv/*', 'repo2text.py', 'repo2text.txt',
+    '.env', '.dockerignore', '.gitignore', '.github/'
 ]
 
-# Load .gitignore file if exists, otherwise use the default ignore list
-try:
-    with open('.gitignore', 'r') as f:
-        gitignore = f.read()
-    ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, gitignore.splitlines())
-    print(".gitignore loaded.")
-except FileNotFoundError:
-    ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, default_ignore_patterns)
-    print(".gitignore not found, using default ignore list.")
+class Repo2Text:
+    def __init__(self, root_path: Path, output_file: Path):
+        self.root_path = root_path
+        self.output_file = output_file
 
-def should_ignore(file_path):
-    relative_path = os.path.relpath(file_path, start=os.path.dirname(os.path.abspath(__file__)))
-    if relative_path.split(os.sep)[0] == '.git' or relative_path == os.path.basename(__file__) or relative_path == 'repo2text.txt':
-        print(f"Ignoring {relative_path} because it's in .git directory or is the script itself or the output file.")
-        return True
-    if ignore_spec.match_file(relative_path):
-        print(f"Ignoring {relative_path} because it matches the ignore list.")
-        return True
-    print(f"Processing {relative_path}.")
-    return False
+        # Load .gitignore file if exists, otherwise use the default ignore list
+        gitignore_file = self.root_path / '.gitignore'
+        if gitignore_file.exists():
+            with gitignore_file.open('r') as f:
+                gitignore = f.read()
+            self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, gitignore.splitlines())
+            print(".gitignore loaded.")
+        else:
+            self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, default_ignore_patterns)
+            print(".gitignore not found, using default ignore list.")
 
-def write_content(file_path, out_file, is_text_file):
-    out_file.write("---\n`" + str(file_path) + "`:\n")
-    if is_text_file:
-        out_file.write("````\n")
-        try:
-            with open(file_path, 'r') as f:
-                out_file.write(f.read())
+    @lru_cache(maxsize=None)
+    def should_ignore(self, file_path: Path) -> bool:
+        relative_path = file_path.relative_to(self.root_path)
+        if '.git' in relative_path.parts or '.github' in relative_path.parts or relative_path in {Path('repo2text.py'), Path('repo2text.txt'), Path('.env'), Path('.dockerignore'), Path('.gitignore')}:
+            print(f"Ignoring {relative_path} because it's in .git or .github directory or is the script itself or the output file.")
+            return True
+        if self.ignore_spec.match_file(str(relative_path)):
+            print(f"Ignoring {relative_path} because it matches the ignore list.")
+            return True
+        print(f"Processing {relative_path}.")
+        return False
+
+    def write_content(self, file_path: Path, out_file):
+        is_text_file = file_path.suffix in text_extensions or file_path.name in special_files
+        out_file.write(f"\n---\n`{str(file_path)}`\n")
+        if is_text_file:
             out_file.write("````\n")
-        except Exception as e:
-            print(f"Could not read file {file_path}. Reason: {e}")
-    else:
-        out_file.write("---\n")
+            try:
+                out_file.write(file_path.read_text(errors='replace'))
+            except Exception as e:
+                print(f"Could not read file {file_path}. Reason: {e}")
+            out_file.write("````\n")
+            out_file.write("---\n")
+        else:
+            out_file.write("---\n")
 
-def process_directory(dir_path, out_file):
-    for root, dirs, files in os.walk(dir_path):
-        for file in files:
-            file_path = Path(root) / Path(file)
-            if should_ignore(file_path):
-                continue
-            is_text_file = file_path.suffix in text_extensions or file in special_files
-            write_content(file_path, out_file, is_text_file)
+    def process_directory(self, dir_path: Path):
+        with self.output_file.open('w') as out_file:
+            for file_path in sorted(dir_path.rglob('*')):
+                if file_path.is_file() and not self.should_ignore(file_path):
+                    self.write_content(file_path, out_file)
 
 def main():
-    with open('repo2text.txt', 'w') as out_file:
-        process_directory('.', out_file)
+    parser = argparse.ArgumentParser(description='Convert a repository into a single .txt file.')
+    parser.add_argument('--path', type=str, default='.', help='Path to the root of the repository.')
+    parser.add_argument('--output', type=str, default='repo2text.txt', help='Name of the output file.')
+    args = parser.parse_args()
+
+    repo2text = Repo2Text(Path(args.path), Path(args.output))
+    repo2text.process_directory(repo2text.root_path)
 
 if __name__ == "__main__":
     main()
