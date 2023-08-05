@@ -13,7 +13,6 @@ Usage:
 import argparse
 import pathspec
 from pathlib import Path
-from functools import lru_cache
 
 
 # List of text files
@@ -27,11 +26,8 @@ text_files = [
     '.m', '.erl', '.beam', '.ex', '.exs',  # Functional
     '.sol', '.vy',  # Contracts
     '.md', '.mmd',  # Docs
-    '.cfg', '.conf', '.ini', '.properties', '.toml'  # Configs
+    '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
 ]
-
-# List of special files with specific names
-special_files = ['rebar.config']
 
 # Default list of patterns to ignore
 default_ignore_patterns = [
@@ -52,32 +48,30 @@ class Repo2Text:
         self.root_path = root_path
         self.output_file = output_file
 
-        # Load .gitignore file if exists, otherwise use the default ignore list
+        # Load .gitignore file.
         gitignore_file = self.root_path / '.gitignore'
         if gitignore_file.exists():
             with gitignore_file.open('r') as f:
                 gitignore = f.read()
-            self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, gitignore.splitlines())
-            print(".gitignore loaded.")
+            print(".gitignore loaded")
         else:
-            self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, default_ignore_patterns)
-            print(".gitignore not found, using default ignore list.")
+            gitignore = ""
+            print(".gitignore not found")
+        ignore_patterns = list(set(gitignore.splitlines()).union(set(default_ignore_patterns)))
+        self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignore_patterns)
 
-    @lru_cache(maxsize=None)
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        if '.git' in relative_path.parts or '.github' in relative_path.parts or str(relative_path) in {'repo2text.py', 'repo2text.txt', '.env', '.dockerignore', '.gitignore', 'LICENSE.md'}:
-            print(f"Ignoring {relative_path} because it's in .git or .github directory or is the script itself or the output file.")
+        if '.git' in relative_path.parts or \
+            '.github' in relative_path.parts or \
+            self.ignore_spec.match_file(str(relative_path)):
+            print(f"Ignoring {relative_path}")
             return True
-        if self.ignore_spec.match_file(str(relative_path)):
-            print(f"Ignoring {relative_path} because it matches the ignore list.")
-            return True
-        print(f"Processing {relative_path}.")
+        print(f"Processing {relative_path}")
         return False
 
-    def write_content(self, file_path: Path, out_file):
-        is_text_file = file_path.suffix in text_files or file_path.name in special_files
-        should_ignore_file = self.should_ignore(file_path)
+    def write_content(self, file_path: Path, out_file, should_ignore_file: bool):
+        is_text_file = file_path.suffix in text_files
         
         if not should_ignore_file:  # Add this condition
             out_file.write(f"\n---\n`{str(file_path)}`\n")
@@ -96,8 +90,10 @@ class Repo2Text:
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
             for file_path in sorted(dir_path.rglob('*')):
-                if file_path.is_file() and not self.should_ignore(file_path):
-                    self.write_content(file_path, out_file)
+                if file_path.is_file():
+                    should_ignore_file = self.should_ignore(file_path)
+                    if not should_ignore_file:
+                        self.write_content(file_path, out_file, should_ignore_file)
 
 def main():
     parser = argparse.ArgumentParser(description='Convert a repository into a single .txt file.')
