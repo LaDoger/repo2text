@@ -19,6 +19,83 @@ public class Main {
 ---
 
 ---
+`demo/data/demo.json`
+````
+{
+    "company": {
+        "name": "Tech Corp",
+        "address": {
+            "street": "123 Tech Road",
+            "city": "Techville",
+            "country": "USA"
+        },
+        "employees": [
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john@example.com",
+                "age": 30,
+                "department": "HR",
+                "skills": ["communication", "organization"]
+            },
+            {
+                "firstName": "Anna",
+                "lastName": "Smith",
+                "email": "anna@example.com",
+                "age": 31,
+                "department": "Sales",
+                "skills": ["sales", "marketing"]
+            },
+            {
+                "firstName": "Peter",
+                "lastName": "Jones",
+                "email": "peter@example.com",
+                "age": 24,
+                "department": "Development",
+                "skills": ["programming", "testing"]
+            }
+        ]
+    }
+}````
+---
+
+---
+`demo/data/demo.yaml`
+````
+company:
+  name: Tech Corp
+  address:
+    street: 123 Tech Road
+    city: Techville
+    country: USA
+  employees:
+    - firstName: John
+      lastName: Doe
+      email: john@example.com
+      age: 30
+      department: HR
+      skills:
+        - communication
+        - organization
+    - firstName: Anna
+      lastName: Smith
+      email: anna@example.com
+      age: 31
+      department: Sales
+      skills:
+        - sales
+        - marketing
+    - firstName: Peter
+      lastName: Jones
+      email: peter@example.com
+      age: 24
+      department: Development
+      skills:
+        - programming
+        - testing````
+---
+
+---
 `demo/demo.c`
 ````
 #include <stdio.h>
@@ -65,7 +142,34 @@ puts "Hello, World!"````
 ---
 
 ---
-`demo/index.html`
+`demo/main.go`
+````
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}````
+---
+
+---
+`demo/main.rs`
+````
+fn main() {
+    println!("Hello, World!");
+}````
+---
+
+---
+`demo/main.swift`
+````
+import Swift
+print("Hello, World!")````
+---
+
+---
+`demo/website/index.html`
 ````
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +196,7 @@ puts "Hello, World!"````
 ---
 
 ---
-`demo/main.css`
+`demo/website/main.css`
 ````
 body {
     font-family: Arial, sans-serif;
@@ -132,36 +236,9 @@ footer {
 ---
 
 ---
-`demo/main.go`
-````
-package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, World!")
-}````
----
-
----
-`demo/main.js`
+`demo/website/main.js`
 ````
 document.getElementById('demo-button').addEventListener('click', function() {
     alert('You clicked the button on the Demo Website!');
 });````
----
-
----
-`demo/main.rs`
-````
-fn main() {
-    println!("Hello, World!");
-}````
----
-
----
-`demo/main.swift`
-````
-import Swift
-print("Hello, World!")````
 ---

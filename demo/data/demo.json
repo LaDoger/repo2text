@@ -1,0 +1,36 @@
+{
+    "company": {
+        "name": "Tech Corp",
+        "address": {
+            "street": "123 Tech Road",
+            "city": "Techville",
+            "country": "USA"
+        },
+        "employees": [
+            {
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john@example.com",
+                "age": 30,
+                "department": "HR",
+                "skills": ["communication", "organization"]
+            },
+            {
+                "firstName": "Anna",
+                "lastName": "Smith",
+                "email": "anna@example.com",
+                "age": 31,
+                "department": "Sales",
+                "skills": ["sales", "marketing"]
+            },
+            {
+                "firstName": "Peter",
+                "lastName": "Jones",
+                "email": "peter@example.com",
+                "age": 24,
+                "department": "Development",
+                "skills": ["programming", "testing"]
+            }
+        ]
+    }
+}
