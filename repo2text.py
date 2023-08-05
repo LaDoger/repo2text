@@ -16,20 +16,19 @@ from pathlib import Path
 from functools import lru_cache
 
 
-# File extension categories
-COMMON_FILES = ['.txt', '.json', '.xml', '.csv', '.yml', '.yaml']
-SCRIPTING_LANGUAGES = ['.py', '.sh', '.rb', '.lua', '.r']
-WEB_RELATED = ['.js', '.html', '.css', '.php']
-C_CPP = ['.c', '.cpp', '.h', '.hpp']
-JAVA = ['.java', '.class']
-OTHER_LANGUAGES = ['.go', '.rs', '.swift', '.cs']
-FUNCTIONAL_PROGRAMMING = ['.m', '.erl', '.beam', '.ex', '.exs']
-SMART_CONTRACTS = ['.sol', '.vy']
-DOCUMENTATION = ['.md', '.mmd']
-CONFIGURATIONS = ['.cfg', '.conf', '.ini', '.properties', '.toml']
-
-# List of text-based file extensions
-text_extensions = COMMON_FILES + SCRIPTING_LANGUAGES + WEB_RELATED + C_CPP + JAVA + OTHER_LANGUAGES + FUNCTIONAL_PROGRAMMING + SMART_CONTRACTS + DOCUMENTATION + CONFIGURATIONS
+# List of text files
+text_files = [
+    '.txt', '.json', '.xml', '.csv', '.yml', '.yaml',  # Text/Data files
+    '.py', '.sh', '.rb', '.lua', '.r',  # Scripts
+    '.js', '.html', '.css', '.php',  # Web files
+    '.c', '.cpp', '.h', '.hpp',  # C/C++
+    '.java', '.class',  # Java
+    '.go', '.rs', '.swift', '.cs',  # Other languages
+    '.m', '.erl', '.beam', '.ex', '.exs',  # Functional
+    '.sol', '.vy',  # Contracts
+    '.md', '.mmd',  # Docs
+    '.cfg', '.conf', '.ini', '.properties', '.toml'  # Configs
+]
 
 # List of special files with specific names
 special_files = ['rebar.config']
@@ -77,7 +76,7 @@ class Repo2Text:
         return False
 
     def write_content(self, file_path: Path, out_file):
-        is_text_file = file_path.suffix in text_extensions or file_path.name in special_files
+        is_text_file = file_path.suffix in text_files or file_path.name in special_files
         should_ignore_file = self.should_ignore(file_path)
         
         if not should_ignore_file:  # Add this condition
