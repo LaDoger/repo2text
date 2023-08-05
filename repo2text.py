@@ -1,7 +1,7 @@
 """
-Script to convert an entire repository into a single .txt file named "repo2text.txt".
-This could be useful when you want to feed the entire repository to a
-Large Language Model (LLM) and let it understand how the repository works.
+Script to convert an entire repo into a single .txt file named "repo2text.txt".
+This could be useful when you want to feed the entire repo to a
+Large Language Model (LLM) and let it understand how the repo works.
 
 Usage: 
 
@@ -15,15 +15,15 @@ import pathspec
 from pathlib import Path
 
 
-# List of text files
-text_files = [
+# File types we want to include in "repo2text.txt"
+include_files = [
     '.txt', '.json', '.xml', '.csv', '.yml', '.yaml',  # Text/Data files
     '.py', '.sh', '.rb', '.lua', '.r',  # Scripts
     '.js', '.html', '.css', '.php',  # Web files
     '.c', '.cpp', '.h', '.hpp',  # C/C++
     '.java', '.class',  # Java
     '.go', '.rs', '.swift', '.cs',  # Other languages
-    '.m', '.erl', '.beam', '.ex', '.exs',  # Functional
+    '.m', '.erl', '.ex', '.exs',  # Functional
     '.sol', '.vy',  # Contracts
     '.md', '.mmd',  # Docs
     '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
@@ -48,7 +48,6 @@ class Repo2Text:
         self.root_path = root_path
         self.output_file = output_file
 
-        # Load .gitignore file.
         gitignore_file = self.root_path / '.gitignore'
         if gitignore_file.exists():
             with gitignore_file.open('r') as f:
@@ -71,7 +70,7 @@ class Repo2Text:
         return False
 
     def write_content(self, file_path: Path, out_file, should_ignore_file: bool):
-        is_text_file = file_path.suffix in text_files
+        is_text_file = file_path.suffix in include_files
         
         if not should_ignore_file:  # Add this condition
             out_file.write(f"\n---\n`{str(file_path)}`\n")

@@ -1,0 +1,167 @@
+
+---
+`README.md`
+````
+# repo2text
+Converts an entire repository into a single text file.
+
+Read the descriptions in the repo2text.py file!````
+---
+
+---
+`demo/Main.java`
+````
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}````
+---
+
+---
+`demo/demo.c`
+````
+#include <stdio.h>
+
+int main() {
+    printf("Hello, World!\n");
+    return 0;
+}````
+---
+
+---
+`demo/demo.cpp`
+````
+#include <iostream>
+
+int main() {
+    std::cout << "Hello, World!" << std::endl;
+    return 0;
+}````
+---
+
+---
+`demo/demo.cs`
+````
+using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("Hello, World!");
+    }
+}````
+---
+
+---
+`demo/demo.py`
+````
+print("Hello, World!")````
+---
+
+---
+`demo/demo.rb`
+````
+puts "Hello, World!"````
+---
+
+---
+`demo/index.html`
+````
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Website</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Demo Website</h1>
+        <p>This is just a demo website.</p>
+    </header>
+    <main>
+        <button id="demo-button">Click me!</button>
+    </main>
+    <footer>
+        <p>This is a demo website. © 2023</p>
+    </footer>
+    <script src="main.js"></script>
+</body>
+</html>````
+---
+
+---
+`demo/main.css`
+````
+body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #0080ff;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #0080ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}````
+---
+
+---
+`demo/main.go`
+````
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}````
+---
+
+---
+`demo/main.js`
+````
+document.getElementById('demo-button').addEventListener('click', function() {
+    alert('You clicked the button on the Demo Website!');
+});````
+---
+
+---
+`demo/main.rs`
+````
+fn main() {
+    println!("Hello, World!");
+}````
+---
+
+---
+`demo/main.swift`
+````
+import Swift
+print("Hello, World!")````
+---
