@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 # File types we want to include in "repo2text.txt"
-include_files = [
+include_files = {
     '.txt', '.json', '.xml', '.csv', '.yml', '.yaml',  # Text/Data files
     '.py', '.sh', '.rb', '.lua', '.r',  # Scripts
     '.js', '.html', '.css', '.php',  # Web files
@@ -27,9 +27,10 @@ include_files = [
     '.sol', '.vy',  # Contracts
     '.md', '.mmd',  # Docs
     '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
-]
+}
 
-default_ignore_patterns = [
+# File patterns we want to exclude from "repo2text.txt"
+default_ignore_patterns = {
     # Common temporary and backup files
     '*.log', '*.bak', '*.swp', '*.tmp',
 
@@ -43,11 +44,31 @@ default_ignore_patterns = [
     '*.hex', '*.lst', '*.lss', '*.d', '*.dep',
 
     # Miscellaneous
-    'node_modules', '*.beam', 'LICENSE.md', '_build',
+    'node_modules', '*.beam', 'LICENSE', 'LICENSE.md', '_build',
     
-    # Script specific ignore patterns
+    # This tool itself
     'repo2text.py', 'repo2text.txt'
-]
+}
+
+
+def file_priority(file_path: Path) -> int:
+    """Get the priority for the file. Lower values have higher priority."""
+    name = file_path.name
+    path_parts = file_path.parts
+
+    # Assign priorities
+    if name == "README.md":
+        return 0
+    elif file_path.parent == Path("."):  # Root directory
+        return 1
+    elif any(part.startswith('.') for part in path_parts):  # Hidden files/folders
+        return 3
+    else:
+        return 2
+
+def sort_files(file_list: list) -> list:
+    """Sort files based on defined priorities."""
+    return sorted(file_list, key=lambda f: (file_priority(f), str(f).lower()))
 
 
 class Repo2Text:
@@ -59,16 +80,14 @@ class Repo2Text:
         if gitignore_file.exists():
             with gitignore_file.open('r') as f:
                 gitignore = f.read()
-            print(".gitignore loaded")
         else:
             gitignore = ""
-            print(".gitignore not found")
         ignore_patterns = list(set(gitignore.splitlines()).union(set(default_ignore_patterns)))
         self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignore_patterns)
 
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        # ignores any file or folder name that starts with "."
+        # Ignores any file or folder name that starts with "."
         if any(part.startswith('.') for part in relative_path.parts) or \
             self.ignore_spec.match_file(str(relative_path)):
             print(f"Ignoring  {relative_path}")
@@ -76,30 +95,30 @@ class Repo2Text:
         print(f"Including {relative_path}")
         return False
 
-    def write_content(self, file_path: Path, out_file, should_ignore_file: bool):
+    def write_content(self, file_path: Path, out_file):
         is_text_file = file_path.suffix in include_files
         
-        if not should_ignore_file:  # Add this condition
-            out_file.write(f"\n---\n`{str(file_path)}`\n")
+        out_file.write(f"\n---\n`{str(file_path)}`\n")
             
-            if is_text_file:
-                out_file.write("````\n")
-                try:
-                    out_file.write(file_path.read_text(errors='replace'))
-                except Exception as e:
-                    print(f"Could not read file {file_path}. Reason: {e}")
-                out_file.write("````\n")
-                out_file.write("---\n")
-            else:
-                out_file.write("---\n")
+        if is_text_file:
+            out_file.write("````\n")
+            try:
+                out_file.write(file_path.read_text(errors='replace'))
+            except Exception as e:
+                print(f"Could not read file {file_path}. Reason: {e}")
+            out_file.write("````\n")
+        out_file.write("---\n")
 
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
-            for file_path in sorted(dir_path.rglob('*')):
+            all_files = list(dir_path.rglob('*'))
+            sorted_files = sort_files(all_files)
+            for file_path in sorted_files:
                 if file_path.is_file():
                     should_ignore_file = self.should_ignore(file_path)
                     if not should_ignore_file:
-                        self.write_content(file_path, out_file, should_ignore_file)
+                        self.write_content(file_path, out_file)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Convert a repository into a single .txt file.')
@@ -109,6 +128,7 @@ def main():
 
     repo2text = Repo2Text(Path(args.path), Path(args.output))
     repo2text.process_directory(repo2text.root_path)
+
 
 if __name__ == "__main__":
     main()

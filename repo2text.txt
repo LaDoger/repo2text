@@ -9,16 +9,6 @@ Read the descriptions in the repo2text.py file!````
 ---
 
 ---
-`demo/Main.java`
-````
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}````
----
-
----
 `demo/data/demo.csv`
 ````
 Company Name,Street,City,Country,First Name,Last Name,Email,Age,Department,Skills
@@ -159,6 +149,16 @@ import "fmt"
 
 func main() {
     fmt.Println("Hello, World!")
+}````
+---
+
+---
+`demo/Main.java`
+````
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
 }````
 ---
 
