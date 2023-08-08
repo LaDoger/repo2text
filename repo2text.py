@@ -29,19 +29,26 @@ include_files = [
     '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
 ]
 
-# Default list of patterns to ignore
 default_ignore_patterns = [
-    '*.log', '*.bak', '*.swp', 
-    '.DS_Store', '.Trash-*', '*.pyc', 
-    '__pycache__', '*.obj', '*.exe', 
-    '*.dll', '*.so', '*.dylib', '*.hi', '*.chi', 
-    '*.pbc', '*.par', '*.pyo', '*.pyd', '*.pdb', 
-    '*.asm', '*.bin', '*.elf', '*.hex', '*.lst', 
-    '*.lss', '*.d', '*.dep', 'node_modules', 
-    '*.beam', 'LICENSE.md', '_build',
-    'venv/', 'venv/*', 'repo2text.py', 'repo2text.txt',
-    '.env', '.dockerignore', '.gitignore', '.github/'
+    # Common temporary and backup files
+    '*.log', '*.bak', '*.swp', '*.tmp',
+
+    # Python specific files
+    '*.pyc', '__pycache__', 'venv/', 'venv/*',
+
+    # Compiled binaries and related files
+    '*.obj', '*.exe', '*.dll', '*.so', '*.dylib', 
+    '*.hi', '*.chi', '*.pbc', '*.par', '*.pyo', 
+    '*.pyd', '*.pdb', '*.asm', '*.bin', '*.elf', 
+    '*.hex', '*.lst', '*.lss', '*.d', '*.dep',
+
+    # Miscellaneous
+    'node_modules', '*.beam', 'LICENSE.md', '_build',
+    
+    # Script specific ignore patterns
+    'repo2text.py', 'repo2text.txt'
 ]
+
 
 class Repo2Text:
     def __init__(self, root_path: Path, output_file: Path):
@@ -61,12 +68,12 @@ class Repo2Text:
 
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        if '.git' in relative_path.parts or \
-            '.github' in relative_path.parts or \
+        # ignores any file or folder name that starts with "."
+        if any(part.startswith('.') for part in relative_path.parts) or \
             self.ignore_spec.match_file(str(relative_path)):
-            print(f"Ignoring {relative_path}")
+            print(f"Ignoring  {relative_path}")
             return True
-        print(f"Processing {relative_path}")
+        print(f"Including {relative_path}")
         return False
 
     def write_content(self, file_path: Path, out_file, should_ignore_file: bool):
