@@ -9,6 +9,50 @@ Read the descriptions in the repo2text.py file!````
 ---
 
 ---
+`demo/contracts/demo.sol`
+````
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Demo {
+    string public greeting;
+
+    constructor(string memory _greeting) {
+        greeting = _greeting;
+    }
+
+    function setGreeting(string memory _greeting) public {
+        greeting = _greeting;
+    }
+
+    function getGreeting() public view returns(string memory) {
+        return greeting;
+    }
+}
+````
+---
+
+---
+`demo/contracts/demo.vy`
+````
+greeting: public(string)
+
+@public
+def __init__(_greeting: string):
+    self.greeting = _greeting
+
+@public
+def setGreeting(_greeting: string):
+    self.greeting = _greeting
+
+@public
+@view
+def getGreeting() -> string:
+    return self.greeting
+````
+---
+
+---
 `demo/data/demo.csv`
 ````
 Company Name,Street,City,Country,First Name,Last Name,Email,Age,Department,Skills
