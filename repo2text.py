@@ -84,14 +84,27 @@ class Repo2Text:
             gitignore = ""
         ignore_patterns = list(set(gitignore.splitlines()).union(set(default_ignore_patterns)))
         self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignore_patterns)
+        self.ignored_dirs = set()
 
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        # Ignores any file or folder name that starts with "."
-        if any(part.startswith('.') for part in relative_path.parts) or \
-            self.ignore_spec.match_file(str(relative_path)):
-            print(f"Ignoring  {relative_path}")
+        parts = list(relative_path.parts)
+
+        # Construct path from root to file, checking each directory
+        current_path = self.root_path
+        for part in parts[:-1]:  # Exclude the file itself
+            current_path = current_path / part
+            relative_dir = current_path.relative_to(self.root_path)
+            if any(part.startswith('.') for part in relative_dir.parts) or self.ignore_spec.match_file(str(relative_dir)):
+                if str(relative_dir) not in self.ignored_dirs:
+                    self.ignored_dirs.add(str(relative_dir))
+                    print(f"*Ignoring {relative_dir}/")
+                return True
+
+        # After checking all directories, check the file itself
+        if any(part.startswith('.') for part in relative_path.parts) or self.ignore_spec.match_file(str(relative_path)):
             return True
+
         print(f"Including {relative_path}")
         return False
 
