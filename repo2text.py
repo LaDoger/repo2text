@@ -35,7 +35,7 @@ default_ignore_patterns = {
     '*.log', '*.bak', '*.swp', '*.tmp',
 
     # Python specific files
-    '*.pyc', '__pycache__', 'venv/', 'venv/*',
+    '*.pyc', '__pycache__', 'venv/', 'venv_old/',
 
     # Compiled binaries and related files
     '*.obj', '*.exe', '*.dll', '*.so', '*.dylib', 
@@ -88,22 +88,26 @@ class Repo2Text:
 
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
-        parts = list(relative_path.parts)
 
         # Construct path from root to file, checking each directory
         current_path = self.root_path
-        for part in parts[:-1]:  # Exclude the file itself
+        for part in relative_path.parts:
             current_path = current_path / part
             relative_dir = current_path.relative_to(self.root_path)
-            if any(part.startswith('.') for part in relative_dir.parts) or self.ignore_spec.match_file(str(relative_dir)):
+            
+            # Check for hidden folders/files or those in default_ignore_patterns
+            if any(p.startswith('.') for p in relative_dir.parts) or any(pattern.strip('/*') == str(relative_dir) for pattern in default_ignore_patterns):
                 if str(relative_dir) not in self.ignored_dirs:
                     self.ignored_dirs.add(str(relative_dir))
-                    print(f"*Ignoring {relative_dir}/")
+                    print(f"*Ignoring {relative_dir}" + ("/" if current_path.is_dir() else ""))
                 return True
 
-        # After checking all directories, check the file itself
-        if any(part.startswith('.') for part in relative_path.parts) or self.ignore_spec.match_file(str(relative_path)):
-            return True
+            # Check for patterns in gitignore
+            if self.ignore_spec.match_file(str(relative_dir) + ("/" if current_path.is_dir() else "")):
+                if str(relative_dir) not in self.ignored_dirs:
+                    self.ignored_dirs.add(str(relative_dir))
+                    print(f"*Ignoring {relative_dir}" + ("/" if current_path.is_dir() else ""))
+                return True
 
         print(f"Including {relative_path}")
         return False
