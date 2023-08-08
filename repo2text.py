@@ -115,16 +115,18 @@ class Repo2Text:
     def write_content(self, file_path: Path, out_file):
         is_text_file = file_path.suffix in include_files
         
-        out_file.write(f"\n---\n`{str(file_path)}`\n")
+        separator_start = f"\n\n/* ====== START OF FILE: {file_path} ====== */\n\n"
+        separator_end = f"\n\n/* ====== END OF FILE: {file_path} ====== */\n\n"
+        
+        out_file.write(separator_start)
             
         if is_text_file:
-            out_file.write("````\n")
             try:
                 out_file.write(file_path.read_text(errors='replace'))
             except Exception as e:
                 print(f"Could not read file {file_path}. Reason: {e}")
-            out_file.write("````\n")
-        out_file.write("---\n")
+            
+        out_file.write(separator_end)
 
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
