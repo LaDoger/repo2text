@@ -108,8 +108,8 @@ class Repo2Text:
         is_text_file = file_path.suffix in include_files
 
         if is_text_file:
-            separator_start = f"\n\n-------- START OF FILE: {file_path} --------\n\n````\n"
-            separator_end = f"\n````\n-------- END OF FILE: {file_path} --------\n\n"
+            separator_start = f"\n\n-------- START OF `{file_path}` --------\n\n````\n"
+            separator_end = f"\n````\n-------- END OF `{file_path}` --------\n\n"
 
             content = file_path.read_text(errors='replace')
             
@@ -119,7 +119,7 @@ class Repo2Text:
             out_file.write(content)
             out_file.write(separator_end)
         else:
-            omitted_message = f"\n-------- CONTENT OF: {file_path} IS OMITTED --------\n"
+            omitted_message = f"\n-------- CONTENT OF `{file_path}` IS OMITTED --------\n"
             out_file.write(omitted_message)
 
     def process_directory(self, dir_path: Path):

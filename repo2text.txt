@@ -1,6 +1,6 @@
 
 
--------- START OF FILE: README.md --------
+-------- START OF `README.md` --------
 
 ````
 # repo2text
@@ -8,11 +8,11 @@ Converts an entire repository into a single text file.
 
 Read the descriptions in the repo2text.py file!
 ````
--------- END OF FILE: README.md --------
+-------- END OF `README.md` --------
 
 
 
--------- START OF FILE: demo/contracts/demo.sol --------
+-------- START OF `demo/contracts/demo.sol` --------
 
 ````
 // SPDX-License-Identifier: MIT
@@ -35,11 +35,11 @@ contract Demo {
 }
 
 ````
--------- END OF FILE: demo/contracts/demo.sol --------
+-------- END OF `demo/contracts/demo.sol` --------
 
 
 
--------- START OF FILE: demo/contracts/demo.vy --------
+-------- START OF `demo/contracts/demo.vy` --------
 
 ````
 greeting: public(string)
@@ -58,11 +58,11 @@ def getGreeting() -> string:
     return self.greeting
 
 ````
--------- END OF FILE: demo/contracts/demo.vy --------
+-------- END OF `demo/contracts/demo.vy` --------
 
 
 
--------- START OF FILE: demo/data/demo.csv --------
+-------- START OF `demo/data/demo.csv` --------
 
 ````
 Company Name,Street,City,Country,First Name,Last Name,Email,Age,Department,Skills
@@ -70,11 +70,11 @@ Tech Corp,123 Tech Road,Techville,USA,John,Doe,john@example.com,30,HR,"communica
 Tech Corp,123 Tech Road,Techville,USA,Anna,Smith,anna@example.com,31,Sales,"sales,marketing"
 Tech Corp,123 Tech Road,Techville,USA,Peter,Jones,peter@example.com,24,Development,"programming,testing"
 ````
--------- END OF FILE: demo/data/demo.csv --------
+-------- END OF `demo/data/demo.csv` --------
 
 
 
--------- START OF FILE: demo/data/demo.json --------
+-------- START OF `demo/data/demo.json` --------
 
 ````
 {
@@ -114,11 +114,11 @@ Tech Corp,123 Tech Road,Techville,USA,Peter,Jones,peter@example.com,24,Developme
     }
 }
 ````
--------- END OF FILE: demo/data/demo.json --------
+-------- END OF `demo/data/demo.json` --------
 
 
 
--------- START OF FILE: demo/data/demo.yaml --------
+-------- START OF `demo/data/demo.yaml` --------
 
 ````
 company:
@@ -153,11 +153,11 @@ company:
         - programming
         - testing
 ````
--------- END OF FILE: demo/data/demo.yaml --------
+-------- END OF `demo/data/demo.yaml` --------
 
 
 
--------- START OF FILE: demo/demo.c --------
+-------- START OF `demo/demo.c` --------
 
 ````
 #include <stdio.h>
@@ -167,11 +167,11 @@ int main() {
     return 0;
 }
 ````
--------- END OF FILE: demo/demo.c --------
+-------- END OF `demo/demo.c` --------
 
 
 
--------- START OF FILE: demo/demo.cpp --------
+-------- START OF `demo/demo.cpp` --------
 
 ````
 #include <iostream>
@@ -181,11 +181,11 @@ int main() {
     return 0;
 }
 ````
--------- END OF FILE: demo/demo.cpp --------
+-------- END OF `demo/demo.cpp` --------
 
 
 
--------- START OF FILE: demo/demo.cs --------
+-------- START OF `demo/demo.cs` --------
 
 ````
 using System;
@@ -196,29 +196,29 @@ class Program {
     }
 }
 ````
--------- END OF FILE: demo/demo.cs --------
+-------- END OF `demo/demo.cs` --------
 
 
 
--------- START OF FILE: demo/demo.py --------
+-------- START OF `demo/demo.py` --------
 
 ````
 print("Hello, World!")
 ````
--------- END OF FILE: demo/demo.py --------
+-------- END OF `demo/demo.py` --------
 
 
 
--------- START OF FILE: demo/demo.rb --------
+-------- START OF `demo/demo.rb` --------
 
 ````
 puts "Hello, World!"
 ````
--------- END OF FILE: demo/demo.rb --------
+-------- END OF `demo/demo.rb` --------
 
 
 
--------- START OF FILE: demo/main.go --------
+-------- START OF `demo/main.go` --------
 
 ````
 package main
@@ -229,11 +229,11 @@ func main() {
     fmt.Println("Hello, World!")
 }
 ````
--------- END OF FILE: demo/main.go --------
+-------- END OF `demo/main.go` --------
 
 
 
--------- START OF FILE: demo/Main.java --------
+-------- START OF `demo/Main.java` --------
 
 ````
 public class Main {
@@ -242,32 +242,32 @@ public class Main {
     }
 }
 ````
--------- END OF FILE: demo/Main.java --------
+-------- END OF `demo/Main.java` --------
 
 
 
--------- START OF FILE: demo/main.rs --------
+-------- START OF `demo/main.rs` --------
 
 ````
 fn main() {
     println!("Hello, World!");
 }
 ````
--------- END OF FILE: demo/main.rs --------
+-------- END OF `demo/main.rs` --------
 
 
 
--------- START OF FILE: demo/main.swift --------
+-------- START OF `demo/main.swift` --------
 
 ````
 import Swift
 print("Hello, World!")
 ````
--------- END OF FILE: demo/main.swift --------
+-------- END OF `demo/main.swift` --------
 
 
 
--------- START OF FILE: demo/website/index.html --------
+-------- START OF `demo/website/index.html` --------
 
 ````
 <!DOCTYPE html>
@@ -293,11 +293,11 @@ print("Hello, World!")
 </body>
 </html>
 ````
--------- END OF FILE: demo/website/index.html --------
+-------- END OF `demo/website/index.html` --------
 
 
 
--------- START OF FILE: demo/website/main.css --------
+-------- START OF `demo/website/main.css` --------
 
 ````
 body {
@@ -336,16 +336,16 @@ footer {
     width: 100%;
 }
 ````
--------- END OF FILE: demo/website/main.css --------
+-------- END OF `demo/website/main.css` --------
 
 
 
--------- START OF FILE: demo/website/main.js --------
+-------- START OF `demo/website/main.js` --------
 
 ````
 document.getElementById('demo-button').addEventListener('click', function() {
     alert('You clicked the button on the Demo Website!');
 });
 ````
--------- END OF FILE: demo/website/main.js --------
+-------- END OF `demo/website/main.js` --------
 
