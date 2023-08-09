@@ -23,7 +23,7 @@ include_files = {
     '.c', '.cpp', '.h', '.hpp',  # C/C++
     '.java', '.class',  # Java
     '.go', '.rs', '.swift', '.cs',  # Other languages
-    '.m', '.erl', '.ex', '.exs',  # Functional
+    '.m', '.erl', '.hrl', '.ex', '.exs', '.elm',  # Functional
     '.sol', '.vy',  # Contracts
     '.md', '.mmd',  # Docs
     '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
@@ -40,7 +40,6 @@ default_ignore_patterns = {
     '*.o', '*.a', '*.bin', '*.exe', '*.dll', '*.so',  # Binary and object files
     'repo2text.py', 'repo2text.txt'  # This tool itself
 }
-
 
 
 def file_priority(file_path: Path) -> int:
