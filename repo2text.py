@@ -85,6 +85,7 @@ class Repo2Text:
         ignore_patterns = list(set(gitignore.splitlines()).union(set(default_ignore_patterns)))
         self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignore_patterns)
         self.ignored_dirs = set()
+        self.file_count = 0
 
     def should_ignore(self, file_path: Path) -> bool:
         relative_path = file_path.relative_to(self.root_path)
@@ -116,19 +117,18 @@ class Repo2Text:
         is_text_file = file_path.suffix in include_files
 
         if is_text_file:
-            separator_start = f"\n\n/* ====== START OF FILE: {file_path} ====== */\n\n"
-            separator_end = f"\n\n/* ====== END OF FILE: {file_path} ====== */\n\n"
+            separator_start = f"\n\n-------- START OF FILE: {file_path} --------\n\n"
+            separator_end = f"\n\n-------- END OF FILE: {file_path} --------\n\n"
+
+            content = file_path.read_text(errors='replace')
+            
+            self.file_count += 1
 
             out_file.write(separator_start)
-
-            try:
-                out_file.write(file_path.read_text(errors='replace'))
-            except Exception as e:
-                print(f"Could not read file {file_path}. Reason: {e}")
-
+            out_file.write(content)
             out_file.write(separator_end)
         else:
-            omitted_message = f"\n/* ====== CONTENT OF: {file_path} IS OMITTED ====== */\n"
+            omitted_message = f"\n-------- CONTENT OF: {file_path} IS OMITTED --------\n"
             out_file.write(omitted_message)
 
 
@@ -141,6 +141,17 @@ class Repo2Text:
                     should_ignore_file = self.should_ignore(file_path)
                     if not should_ignore_file:
                         self.write_content(file_path, out_file)
+        self.print_recap()
+
+    def print_recap(self):
+        with self.output_file.open('r') as out_file:
+            content = out_file.read()
+            char_count = len(content)
+            line_count = len(content.splitlines())
+        print("\n===== RECAP =====")
+        print(f"Total files: {self.file_count}")
+        print(f"Total chars: {char_count}")
+        print(f"Total lines: {line_count}")
 
 
 def main():
