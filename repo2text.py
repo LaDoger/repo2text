@@ -31,24 +31,16 @@ include_files = {
 
 # File patterns we want to exclude from "repo2text.txt"
 default_ignore_patterns = {
-    # Common temporary and backup files
-    '*.log', '*.bak', '*.swp', '*.tmp',
-
-    # Python specific files
-    '*.pyc', '__pycache__', 'venv/', 'venv_old/',
-
-    # Compiled binaries and related files
-    '*.obj', '*.exe', '*.dll', '*.so', '*.dylib', 
-    '*.hi', '*.chi', '*.pbc', '*.par', '*.pyo', 
-    '*.pyd', '*.pdb', '*.asm', '*.bin', '*.elf', 
-    '*.hex', '*.lst', '*.lss', '*.d', '*.dep',
-
-    # Miscellaneous
-    'node_modules', '*.beam', 'LICENSE', 'LICENSE.md', '_build',
-    
-    # This tool itself
-    'repo2text.py', 'repo2text.txt'
+    '*.log', '*.bak', '*.swp', '*.tmp',  # Common temporary files
+    '*.pyc', '__pycache__', 'venv/', 'venv_old/',  # Python specific files and directories
+    'node_modules/',  # Node.js dependencies
+    'build/', 'dist/', 'out/', 'target/',  # Build and distribution folders
+    'vendor/',  # Dependencies in some languages
+    'log/',  # Common directory for log files
+    '*.o', '*.a', '*.bin', '*.exe', '*.dll', '*.so',  # Binary and object files
+    'repo2text.py', 'repo2text.txt'  # This tool itself
 }
+
 
 
 def file_priority(file_path: Path) -> int:
@@ -65,6 +57,7 @@ def file_priority(file_path: Path) -> int:
         return 3
     else:
         return 2
+
 
 def sort_files(file_list: list) -> list:
     """Sort files based on defined priorities."""
