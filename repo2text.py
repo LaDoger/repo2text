@@ -108,8 +108,8 @@ class Repo2Text:
         is_text_file = file_path.suffix in include_files
 
         if is_text_file:
-            separator_start = f"\n\n-------- START OF FILE: {file_path} --------\n\n"
-            separator_end = f"\n\n-------- END OF FILE: {file_path} --------\n\n"
+            separator_start = f"\n\n-------- START OF FILE: {file_path} --------\n\n````\n"
+            separator_end = f"\n````\n-------- END OF FILE: {file_path} --------\n\n"
 
             content = file_path.read_text(errors='replace')
             
