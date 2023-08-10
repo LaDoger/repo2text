@@ -64,9 +64,11 @@ def sort_files(file_list: list) -> list:
 
 
 class Repo2Text:
-    def __init__(self, root_path: Path, output_file: Path):
-        self.root_path = root_path
-        self.output_file = output_file
+    def __init__(self, output_file: Path):
+        # Use the directory of the current script as the root path
+        self.root_path = Path(__file__).parent
+        # Ensure the output file is in the same directory as the script
+        self.output_file = self.root_path / output_file
 
         gitignore_file = self.root_path / '.gitignore'
         if gitignore_file.exists():
@@ -106,9 +108,12 @@ class Repo2Text:
     def write_content(self, file_path: Path, out_file):
         is_text_file = file_path.suffix in include_files
 
+        # Use relative path to root of the repo for the separators
+        relative_file_path = file_path.relative_to(self.root_path)
+
         if is_text_file:
-            separator_start = f"\n\n-------- START OF `{file_path}` --------\n\n````\n"
-            separator_end = f"\n````\n-------- END OF `{file_path}` --------\n\n"
+            separator_start = f"\n\n-------- START OF `{relative_file_path}` --------\n\n````\n"
+            separator_end = f"\n````\n-------- END OF `{relative_file_path}` --------\n\n"
 
             content = file_path.read_text(errors='replace')
             
@@ -118,7 +123,7 @@ class Repo2Text:
             out_file.write(content)
             out_file.write(separator_end)
         else:
-            omitted_message = f"\n-------- CONTENT OF `{file_path}` IS OMITTED --------\n"
+            omitted_message = f"\n-------- CONTENT OF `{relative_file_path}` IS OMITTED --------\n"
             out_file.write(omitted_message)
 
     def process_directory(self, dir_path: Path):
@@ -148,12 +153,11 @@ class Repo2Text:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert a repository into a single .txt file.')
-    parser.add_argument('--path', type=str, default='.', help='Path to the root of the repository.')
+    parser = argparse.ArgumentParser(description='Convert a directory into a single .txt file.')
     parser.add_argument('--output', type=str, default='repo2text.txt', help='Name of the output file.')
     args = parser.parse_args()
 
-    repo2text = Repo2Text(Path(args.path), Path(args.output))
+    repo2text = Repo2Text(Path(args.output))
     repo2text.process_directory(repo2text.root_path)
 
 
