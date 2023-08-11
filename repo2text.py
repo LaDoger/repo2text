@@ -106,25 +106,30 @@ class Repo2Text:
         return False
 
     def write_content(self, file_path: Path, out_file):
-        is_text_file = file_path.suffix in include_files
+        is_to_include = file_path.suffix in include_files
 
         # Use relative path to root of the repo for the separators
         relative_file_path = file_path.relative_to(self.root_path)
 
-        if is_text_file:
+        if is_to_include:
             separator_start = f"\n\n-------- START OF `{relative_file_path}` --------\n\n````\n"
             separator_end = f"\n````\n-------- END OF `{relative_file_path}` --------\n\n"
 
             content = file_path.read_text(errors='replace')
+            lines_added = len(content.splitlines())
             
             self.file_count += 1
 
             out_file.write(separator_start)
             out_file.write(content)
             out_file.write(separator_end)
+            print(f"Including {file_path.relative_to(self.root_path)}")
+            print(f"          ({lines_added} lines)")
         else:
             omitted_message = f"\n-------- CONTENT OF `{relative_file_path}` IS OMITTED --------\n"
             out_file.write(omitted_message)
+            print(f"*Omitting {file_path.relative_to(self.root_path)}")
+
 
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
@@ -134,10 +139,6 @@ class Repo2Text:
                 if file_path.is_file():
                     should_ignore_file = self.should_ignore(file_path)
                     if not should_ignore_file:
-                        if file_path.suffix in include_files:  # File's content will be included
-                            print(f"Including {file_path.relative_to(self.root_path)}")
-                        else:  # Only the file's name will be included, not its content
-                            print(f"*Omitting {file_path.relative_to(self.root_path)}")
                         self.write_content(file_path, out_file)
         self.print_recap()
 
@@ -146,7 +147,7 @@ class Repo2Text:
             content = out_file.read()
             char_count = len(content)
             line_count = len(content.splitlines())
-        print("\n===== RECAP =====")
+        print("\n===== RECAP: =====")
         print(f"Total files: {self.file_count}")
         print(f"Total chars: {char_count}")
         print(f"Total lines: {line_count}")
