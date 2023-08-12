@@ -1,13 +1,12 @@
 """
-Script to convert an entire repo into a single .txt file named "repo2text.txt".
+Script to convert an entire repo into a single "repo2text.txt" file.
 This could be useful when you want to feed the entire repo to a
 Large Language Model (LLM) and let it understand how the repo works.
 
 Usage: 
-
-- Put this python script named "repo2text.py" into the root folder of a repo.
+- Put this python script named "repo2text.py" in the folder you want to convert.
 - Execute "repo2text.py".
-- The script will create "repo2text.txt" in the same root folder.
+- The script will create "repo2text.txt" in the same folder.
 """
 
 import argparse
@@ -28,6 +27,7 @@ include_files = {
     '.md', '.mmd',  # Docs
     '.cfg', '.conf', '.ini', '.properties', '.toml', '.config'  # Configs
 }
+
 
 # File patterns we want to exclude from "repo2text.txt"
 default_ignore_patterns = {
@@ -129,7 +129,6 @@ class Repo2Text:
             omitted_message = f"\n-------- CONTENT OF `{relative_file_path}` IS OMITTED --------\n"
             out_file.write(omitted_message)
             print(f"*Omitting {file_path.relative_to(self.root_path)}")
-
 
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
