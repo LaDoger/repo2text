@@ -48,7 +48,9 @@ class Repo2Text:
         self.root_path = Path(__file__).parent
         # Ensure the output file is in the same directory as the script
         self.output_file = self.root_path / output_file
-
+        
+        # Read the .gitignore file if it exists and
+        # merge its patterns with the default ignore patterns.
         gitignore_file = self.root_path / '.gitignore'
         if gitignore_file.exists():
             with gitignore_file.open('r') as f:
@@ -56,27 +58,30 @@ class Repo2Text:
         else:
             gitignore = ""
         ignore_patterns = list(set(gitignore.splitlines()).union(set(default_ignore_patterns)))
+        
+        # Create a PathSpec object to efficiently match paths against the ignore patterns.
         self.ignore_spec = pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, ignore_patterns)
         self.ignored_dirs = set()
         self.file_count = 0
 
     def should_ignore(self, file_path: Path) -> bool:
+        """Determine whether a given file or directory should be ignored."""
         relative_path = file_path.relative_to(self.root_path)
 
-        # Construct path from root to file, checking each directory
+        # Check each part of the path to see if it matches any ignore pattern.
         current_path = self.root_path
         for part in relative_path.parts:
             current_path = current_path / part
             relative_dir = current_path.relative_to(self.root_path)
             
-            # Check for hidden folders/files or those in default_ignore_patterns
+            # Ignore hidden files/folders and default ignore patterns.
             if any(p.startswith('.') for p in relative_dir.parts) or any(pattern.strip('/*') == str(relative_dir) for pattern in default_ignore_patterns):
                 if str(relative_dir) not in self.ignored_dirs:
                     self.ignored_dirs.add(str(relative_dir))
                     print(f"*Ignoring {relative_dir}" + ("/" if current_path.is_dir() else ""))
                 return True
 
-            # Check for patterns in gitignore
+            # Ignore file/folders in .gitignore
             if self.ignore_spec.match_file(str(relative_dir) + ("/" if current_path.is_dir() else "")):
                 if str(relative_dir) not in self.ignored_dirs:
                     self.ignored_dirs.add(str(relative_dir))
@@ -85,7 +90,7 @@ class Repo2Text:
         return False
     
     def file_priority(self, file_path: Path) -> int:
-        """Get the priority for the file. Lower values have higher priority."""
+        """Assign a priority value to a file. Lower values have higher priority."""
         name = file_path.name
 
         # Assign priorities
@@ -97,17 +102,16 @@ class Repo2Text:
             return 2
         elif any(part.startswith('.') for part in file_path.parts):  # Hidden files/folders
             return 4
-        else:
+        else: # Normal files have a higher priority than hidden files/folders.
             return 3
     
     def sort_files(self, file_list: list) -> list:
-        """Sort files based on defined priorities."""
+        """Sort a list of files based on their assigned priorities."""
         return sorted(file_list, key=lambda f: (self.file_priority(f), str(f).lower()))
 
     def write_content(self, file_path: Path, out_file):
+        """Write the content of a file to the output text file, with separators."""
         is_to_include = file_path.suffix in include_files
-
-        # Use relative path to root of the repo for the separators
         relative_file_path = file_path.relative_to(self.root_path)
 
         if is_to_include:
@@ -130,6 +134,7 @@ class Repo2Text:
             print(f"*Omitting {file_path.relative_to(self.root_path)}")
 
     def process_directory(self, dir_path: Path):
+        """Process each file in a directory and write its content to the output text file."""
         with self.output_file.open('w') as out_file:
             all_files = list(dir_path.rglob('*'))
             sorted_files = self.sort_files(all_files)
@@ -141,6 +146,7 @@ class Repo2Text:
         self.print_recap()
 
     def print_recap(self):
+        """Print a recap after everything is finished!"""
         with self.output_file.open('r') as out_file:
             content = out_file.read()
             char_count = len(content)
