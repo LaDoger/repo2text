@@ -1,12 +1,22 @@
 """
-Script to convert an entire repo into a single "repo2text.txt" file.
+Script to convert an entire repo into a single `repo2text.txt` file.
 This could be useful when you want to feed the entire repo to a
 Large Language Model (LLM) and let it understand how the repo works.
 
 Usage: 
-- Put this python script named "repo2text.py" in the folder you want to convert.
-- Execute "repo2text.py".
-- The script will create "repo2text.txt" in the same folder.
+1. Put this python script named `repo2text.py` in the folder you want to convert.
+2. Execute `repo2text.py`.
+3. The script will create `repo2text.txt` in the same folder.
+
+Note:
+- We treat files in 3 different ways:
+    - Included: File name and content are both included in `repo2text.txt`.
+        - Defined in include_files
+    - Omitted: File name is included in `repo2text.txt` but content is omitted.
+        - If the file is neither Included nor Ignored, then it's Omitted.
+    - Ignored: File doesn't appear in `repo2text.txt` at all.
+        - Defined in default_ignore_patterns; also uses the .gitignore file.
+- You can put `repo2text.py` in a subfolder and it will only process that folder.
 """
 
 import argparse
