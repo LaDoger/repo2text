@@ -42,27 +42,6 @@ default_ignore_patterns = {
 }
 
 
-def file_priority(file_path: Path) -> int:
-    """Get the priority for the file. Lower values have higher priority."""
-    name = file_path.name
-    path_parts = file_path.parts
-
-    # Assign priorities
-    if name == "README.md":
-        return 0
-    elif file_path.parent == Path("."):  # Root directory
-        return 1
-    elif any(part.startswith('.') for part in path_parts):  # Hidden files/folders
-        return 3
-    else:
-        return 2
-
-
-def sort_files(file_list: list) -> list:
-    """Sort files based on defined priorities."""
-    return sorted(file_list, key=lambda f: (file_priority(f), str(f).lower()))
-
-
 class Repo2Text:
     def __init__(self, output_file: Path):
         # Use the directory of the current script as the root path
@@ -104,6 +83,26 @@ class Repo2Text:
                     print(f"*Ignoring {relative_dir}" + ("/" if current_path.is_dir() else ""))
                 return True
         return False
+    
+    def file_priority(self, file_path: Path) -> int:
+        """Get the priority for the file. Lower values have higher priority."""
+        name = file_path.name
+
+        # Assign priorities
+        if name == "README.md" and file_path.parent == self.root_path:  # Root directory README.md
+            return 0
+        elif name == "README.md":  # Other README.md files
+            return 1
+        elif file_path.parent == self.root_path:  # Other files in root directory
+            return 2
+        elif any(part.startswith('.') for part in file_path.parts):  # Hidden files/folders
+            return 4
+        else:
+            return 3
+    
+    def sort_files(self, file_list: list) -> list:
+        """Sort files based on defined priorities."""
+        return sorted(file_list, key=lambda f: (self.file_priority(f), str(f).lower()))
 
     def write_content(self, file_path: Path, out_file):
         is_to_include = file_path.suffix in include_files
@@ -133,7 +132,7 @@ class Repo2Text:
     def process_directory(self, dir_path: Path):
         with self.output_file.open('w') as out_file:
             all_files = list(dir_path.rglob('*'))
-            sorted_files = sort_files(all_files)
+            sorted_files = self.sort_files(all_files)
             for file_path in sorted_files:
                 if file_path.is_file():
                     should_ignore_file = self.should_ignore(file_path)
