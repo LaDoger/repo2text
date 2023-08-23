@@ -168,11 +168,7 @@ class Repo2Text:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert a directory into a single .txt file.')
-    parser.add_argument('--output', type=str, default='repo2text.txt', help='Name of the output file.')
-    args = parser.parse_args()
-
-    repo2text = Repo2Text(Path(args.output))
+    repo2text = Repo2Text('repo2text.txt')
     repo2text.process_directory(repo2text.root_path)
 
 
