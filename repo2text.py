@@ -28,7 +28,7 @@ from pathlib import Path
 include_files = {
     '.txt', '.json', '.xml', '.csv', '.yml', '.yaml',  # Text/Data files
     '.py', '.sh', '.rb', '.lua', '.r',  # Scripts
-    '.js', '.html', '.css', '.php',  # Web files
+    '.js', '.html', '.css', '.php', '.ts',  # Web files
     '.c', '.cpp', '.h', '.hpp',  # C/C++
     '.java', '.class',  # Java
     '.go', '.rs', '.swift', '.cs',  # Other languages
